@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 
+import sys
 import os
 import shutil
 import time
@@ -26,7 +27,14 @@ class AnyEventHandler(FileSystemEventHandler):
 def get_extension_name(name: str) -> str:
     return os.path.splitext(name)[1][1:].lower()
 
+def get_args():
+    return sys.argv[1:]
+
 def get_abs_path() -> str:
+    args = get_args()
+    if args[0] == '-p' or args[0] == '--path' and len(args) == 2:
+        return args[1]
+
     root = Tk()
     root.withdraw()
     folder_selected = filedialog.askdirectory()
