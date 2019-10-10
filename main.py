@@ -4,7 +4,6 @@ import sys
 import os
 import shutil
 import time
-from datetime import datetime
 
 from tkinter import filedialog
 from tkinter import Tk
