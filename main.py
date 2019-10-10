@@ -29,9 +29,9 @@ def get_extension_name(name: str) -> str:
 def get_abs_path() -> str:
     root = Tk()
     root.withdraw()
-    folder_selected = ''
-    while not folder_selected:
-        folder_selected = filedialog.askdirectory()
+    folder_selected = filedialog.askdirectory()
+    if not folder_selected:
+        raise FileNotFoundError
     return folder_selected
 
 def get_files_and_dirs(abs_path: str) -> tuple:
@@ -69,15 +69,13 @@ def organize_current_files_and_folders(abs_path: str) -> None:
 
 def main() -> None:
     abs_path = ''
-    while True:
-        try:
-            abs_path = get_abs_path()
-            observer = Observer()
-            observer.schedule(AnyEventHandler(abs_path), abs_path, recursive=False)
-            observer.start()
-        except FileNotFoundError as e:
-            continue
-        break
+    try:
+        abs_path = get_abs_path()
+        observer = Observer()
+        observer.schedule(AnyEventHandler(abs_path), abs_path, recursive=False)
+        observer.start()
+    except FileNotFoundError:
+        exit(1)
 
     try:
         while True:
@@ -85,6 +83,7 @@ def main() -> None:
     except KeyboardInterrupt:
         observer.stop()
     observer.join()
+    exit(0)
 
 if __name__ == "__main__":
     main()
