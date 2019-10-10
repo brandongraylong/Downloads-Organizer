@@ -25,7 +25,10 @@ class AnyEventHandler(FileSystemEventHandler):
 
 
 def get_extension_name(name: str) -> str:
-    return os.path.splitext(name)[1][1:].lower()
+    ext = os.path.splitext(name)[1][1:].lower()
+    if not ext:
+        raise Exception
+    return ext
 
 def get_args():
     return sys.argv[1:]
@@ -39,7 +42,7 @@ def get_abs_path() -> str:
     root.withdraw()
     folder_selected = filedialog.askdirectory()
     if not folder_selected:
-        raise FileNotFoundError
+        raise Exception
     return folder_selected
 
 def get_files_and_dirs(abs_path: str) -> tuple:
@@ -49,7 +52,11 @@ def get_files_and_dirs(abs_path: str) -> tuple:
     for item in os.listdir(abs_path):
         item_abs_path = os.path.join(os.path.join(abs_path, item))
         if os.path.isfile(item_abs_path):
-            ext = get_extension_name(item)
+            ext = ''
+            try:
+                ext = get_extension_name(item)
+            except Exception:
+                ext = 'NO EXTENSION'
             files += [(item, ext, item_abs_path)]
         elif os.path.isdir(item_abs_path):
             directories += [(item, item_abs_path)]
@@ -82,7 +89,7 @@ def main() -> None:
         observer = Observer()
         observer.schedule(AnyEventHandler(abs_path), abs_path, recursive=False)
         observer.start()
-    except FileNotFoundError:
+    except Exception:
         exit(1)
 
     try:
