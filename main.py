@@ -3,8 +3,10 @@
 import os
 import shutil
 import time
-import logging
+from datetime import datetime
 
+from tkinter import filedialog
+from tkinter import Tk
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 from watchdog.events import FileCreatedEvent
@@ -21,11 +23,16 @@ class AnyEventHandler(FileSystemEventHandler):
             organize_current_files_and_folders(self._abs_path)
 
 
-def get_extension_name(name: str) ->  str:
+def get_extension_name(name: str) -> str:
     return os.path.splitext(name)[1][1:].lower()
 
 def get_abs_path() -> str:
-    return os.path.join(os.getcwd(), 'Downloads/')
+    root = Tk()
+    root.withdraw()
+    folder_selected = ''
+    while not folder_selected:
+        folder_selected = filedialog.askdirectory()
+    return folder_selected
 
 def get_files_and_dirs(abs_path: str) -> tuple:
     directories = []
@@ -60,13 +67,18 @@ def organize_current_files_and_folders(abs_path: str) -> None:
 
         directories, files = get_files_and_dirs(abs_path)
 
-def main():
-    abs_path = get_abs_path()
-    print('Organizing the following directory: ' + abs_path)
+def main() -> None:
+    abs_path = ''
+    while True:
+        try:
+            abs_path = get_abs_path()
+            observer = Observer()
+            observer.schedule(AnyEventHandler(abs_path), abs_path, recursive=False)
+            observer.start()
+        except FileNotFoundError as e:
+            continue
+        break
 
-    observer = Observer()
-    observer.schedule(AnyEventHandler(abs_path), abs_path, recursive=False)
-    observer.start()
     try:
         while True:
             time.sleep(1)
