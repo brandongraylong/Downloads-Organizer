@@ -10,4 +10,15 @@ Simply install Python3, install requirements using your favorite virtual environ
 ## Supported Systems
 This script is tested and run on Ubuntu 18.04.3 LTS and up, but I have not tested on any other systems.
 
-### ENJOY!
+## Example bash script to run at startup as a user application
+```
+#!/bin/bash
+
+rm -rf Downloads-Organizer
+git clone https://github.com/brandongraylong/Downloads-Organizer.git
+virtualenv Downloads-Organizer/venv
+source Downloads-Organizer/venv/bin/activate
+pip install -r Downloads-Organizer/requirements.txt
+python Downloads-Organizer/main.py --path /path/to/your/Downloads/folder
+deactivate
+```
